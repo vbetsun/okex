@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+
 	"github.com/amir-the-h/okex"
 	"github.com/amir-the-h/okex/api/rest"
 	"github.com/amir-the-h/okex/api/ws"
@@ -28,6 +29,10 @@ func NewClient(ctx context.Context, apiKey, secretKey, passphrase string, destin
 		restURL = okex.DemoRestURL
 		wsPubURL = okex.DemoPublicWsURL
 		wsPriURL = okex.DemoPrivateWsURL
+	case okex.SimulateServer:
+		restURL = okex.SimulatedRestURL
+		wsPubURL = okex.SimulatedPublicWsURL
+		wsPriURL = okex.SimulatedPrivateWsURL
 	}
 
 	r := rest.NewClient(apiKey, secretKey, passphrase, restURL, destination)

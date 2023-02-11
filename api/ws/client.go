@@ -197,6 +197,7 @@ func (c *ClientWs) Send(p bool, op okex.Operation, args []map[string]string, ext
 	if err != nil {
 		return err
 	}
+
 	c.sendChan[p] <- j
 	return nil
 }
@@ -248,12 +249,14 @@ func (c *ClientWs) dial(p bool) error {
 		err := c.receiver(p)
 		if err != nil {
 			fmt.Printf("receiver error: %v\n", err)
+			c.DoneChan <- struct{}{}
 		}
 	}()
 	go func() {
 		err := c.sender(p)
 		if err != nil {
 			fmt.Printf("sender error: %v\n", err)
+			c.DoneChan <- struct{}{}
 		}
 	}()
 	c.conn[p] = conn

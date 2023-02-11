@@ -34,6 +34,7 @@ func (c *Trade) PlaceOrder(req ...requests.PlaceOrder) error {
 	for i, order := range req {
 		tmpArgs[i] = okex.S2M(order)
 	}
+
 	return c.Send(true, op, tmpArgs, map[string]string{"id": req[0].ID})
 }
 

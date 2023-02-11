@@ -70,9 +70,14 @@ const (
 	DemoPublicWsURL  = BaseURL("wss://wspap.okx.com:8443/ws/v5/public?brokerId=9999")
 	DemoPrivateWsURL = BaseURL("wss://wspap.okx.com:8443/ws/v5/private?brokerId=9999")
 
-	NormalServer = Destination(iota + 1)
-	AwsServer    = NormalServer + 1
-	DemoServer   = AwsServer + 1
+	SimulatedRestURL      = BaseURL("http://localhost:9000/okx")
+	SimulatedPublicWsURL  = BaseURL("ws://localhost:9001/public")
+	SimulatedPrivateWsURL = BaseURL("ws://localhost:9001/private")
+
+	NormalServer   = Destination(iota + 1)
+	AwsServer      = NormalServer + 1
+	DemoServer     = AwsServer + 1
+	SimulateServer = DemoServer + 1
 
 	SpotInstrument    = InstrumentType("SPOT")
 	MarginInstrument  = InstrumentType("MARGIN")
