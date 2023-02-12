@@ -35,7 +35,7 @@ type ClientWs struct {
 	apiKey              string
 	secretKey           []byte
 	passphrase          string
-	lastTransmit        map[bool]*time.Time
+	lastTransmit        sync.Map
 	mu                  map[bool]*sync.Mutex
 	rmu                 map[bool]*sync.Mutex
 	AuthRequested       *time.Time
@@ -68,7 +68,7 @@ func NewClient(ctx context.Context, apiKey, secretKey, passphrase string, url ma
 		StructuredEventChan: make(chan interface{}),
 		RawEventChan:        make(chan *events.Basic),
 		conn:                make(map[bool]*websocket.Conn),
-		lastTransmit:        make(map[bool]*time.Time),
+		lastTransmit:        sync.Map{},
 		mu:                  map[bool]*sync.Mutex{true: {}, false: {}},
 		rmu:                 map[bool]*sync.Mutex{true: {}, false: {}},
 	}
@@ -285,14 +285,16 @@ func (c *ClientWs) sender(p bool) error {
 				return err
 			}
 			now := time.Now()
-			c.lastTransmit[p] = &now
+			c.lastTransmit.Store(p, &now)
 			c.mu[p].Unlock()
 			if err := w.Close(); err != nil {
 				return err
 			}
 		case <-ticker.C:
 			c.mu[p].Lock()
-			if c.conn[p] != nil && (c.lastTransmit[p] == nil || (c.lastTransmit[p] != nil && time.Since(*c.lastTransmit[p]) > PingPeriod)) {
+			v, _ := c.lastTransmit.Load(p)
+			t, _ := v.(*time.Time)
+			if c.conn[p] != nil && (t == nil || (t != nil && time.Since(*t) > PingPeriod)) {
 				go func() {
 					c.sendChan[p] <- []byte("ping")
 				}()
@@ -326,9 +328,8 @@ func (c *ClientWs) receiver(p bool) error {
 			}
 			c.rmu[p].Unlock()
 			now := time.Now()
-			c.mu[p].Lock()
-			c.lastTransmit[p] = &now
-			c.mu[p].Unlock()
+			c.lastTransmit.Store(p, &now)
+
 			if mt == websocket.TextMessage && string(data) != "pong" {
 				e := &events.Basic{}
 				if err := json.Unmarshal(data, &e); err != nil {
@@ -375,8 +376,9 @@ func (c *ClientWs) process(data []byte, e *events.Basic) bool {
 		go func() {
 			if c.SubscribeChan != nil {
 				c.SubscribeChan <- &e
+			} else {
+				c.StructuredEventChan <- e
 			}
-			c.StructuredEventChan <- e
 		}()
 		return true
 	case "unsubscribe":
@@ -385,8 +387,9 @@ func (c *ClientWs) process(data []byte, e *events.Basic) bool {
 		go func() {
 			if c.UnsubscribeCh != nil {
 				c.UnsubscribeCh <- &e
+			} else {
+				c.StructuredEventChan <- e
 			}
-			c.StructuredEventChan <- e
 		}()
 		return true
 	case "login":
@@ -401,8 +404,9 @@ func (c *ClientWs) process(data []byte, e *events.Basic) bool {
 		go func() {
 			if c.LoginChan != nil {
 				c.LoginChan <- &e
+			} else {
+				c.StructuredEventChan <- e
 			}
-			c.StructuredEventChan <- e
 		}()
 		return true
 	}
@@ -423,8 +427,9 @@ func (c *ClientWs) process(data []byte, e *events.Basic) bool {
 		go func() {
 			if c.SuccessChan != nil {
 				c.SuccessChan <- &e
+			} else {
+				c.StructuredEventChan <- e
 			}
-			c.StructuredEventChan <- e
 		}()
 		return true
 	}

@@ -383,8 +383,9 @@ func (c *Public) Process(data []byte, e *events.Basic) bool {
 			go func() {
 				if c.iCh != nil {
 					c.iCh <- &e
+				} else {
+					c.StructuredEventChan <- e
 				}
-				c.StructuredEventChan <- e
 			}()
 			return true
 		case "tickers":
@@ -396,8 +397,9 @@ func (c *Public) Process(data []byte, e *events.Basic) bool {
 			go func() {
 				if c.tCh != nil {
 					c.tCh <- &e
+				} else {
+					c.StructuredEventChan <- e
 				}
-				c.StructuredEventChan <- e
 			}()
 			return true
 		case "open-interest":
@@ -409,8 +411,9 @@ func (c *Public) Process(data []byte, e *events.Basic) bool {
 			go func() {
 				if c.oiCh != nil {
 					c.oiCh <- &e
+				} else {
+					c.StructuredEventChan <- e
 				}
-				c.StructuredEventChan <- e
 			}()
 			return true
 		case "trades":
@@ -422,8 +425,9 @@ func (c *Public) Process(data []byte, e *events.Basic) bool {
 			go func() {
 				if c.trCh != nil {
 					c.trCh <- &e
+				} else {
+					c.StructuredEventChan <- e
 				}
-				c.StructuredEventChan <- e
 			}()
 			return true
 		case "estimated-price":
@@ -435,8 +439,9 @@ func (c *Public) Process(data []byte, e *events.Basic) bool {
 			go func() {
 				if c.edepCh != nil {
 					c.edepCh <- &e
+				} else {
+					c.StructuredEventChan <- e
 				}
-				c.StructuredEventChan <- e
 			}()
 			return true
 		case "mark-price":
@@ -448,8 +453,9 @@ func (c *Public) Process(data []byte, e *events.Basic) bool {
 			go func() {
 				if c.mpCh != nil {
 					c.mpCh <- &e
+				} else {
+					c.StructuredEventChan <- e
 				}
-				c.StructuredEventChan <- e
 			}()
 			return true
 		case "price-limit":
@@ -461,8 +467,9 @@ func (c *Public) Process(data []byte, e *events.Basic) bool {
 			go func() {
 				if c.plCh != nil {
 					c.plCh <- &e
+				} else {
+					c.StructuredEventChan <- e
 				}
-				c.StructuredEventChan <- e
 			}()
 			return true
 		case "opt-summary":
@@ -474,8 +481,9 @@ func (c *Public) Process(data []byte, e *events.Basic) bool {
 			go func() {
 				if c.osCh != nil {
 					c.osCh <- &e
+				} else {
+					c.StructuredEventChan <- e
 				}
-				c.StructuredEventChan <- e
 			}()
 			return true
 		case "funding-rate":
@@ -487,8 +495,9 @@ func (c *Public) Process(data []byte, e *events.Basic) bool {
 			go func() {
 				if c.osCh != nil {
 					c.osCh <- &e
+				} else {
+					c.StructuredEventChan <- e
 				}
-				c.StructuredEventChan <- e
 			}()
 			return true
 		case "index-tickers":
@@ -500,8 +509,9 @@ func (c *Public) Process(data []byte, e *events.Basic) bool {
 			go func() {
 				if c.itCh != nil {
 					c.itCh <- &e
+				} else {
+					c.StructuredEventChan <- e
 				}
-				c.StructuredEventChan <- e
 			}()
 			return true
 		default:
@@ -518,8 +528,9 @@ func (c *Public) Process(data []byte, e *events.Basic) bool {
 				go func() {
 					if c.mpcCh != nil {
 						c.mpcCh <- &e
+					} else {
+						c.StructuredEventChan <- e
 					}
-					c.StructuredEventChan <- e
 				}()
 				return true
 			}
@@ -533,8 +544,9 @@ func (c *Public) Process(data []byte, e *events.Basic) bool {
 				go func() {
 					if c.icCh != nil {
 						c.icCh <- &e
+					} else {
+						c.StructuredEventChan <- e
 					}
-					c.StructuredEventChan <- e
 				}()
 				return true
 			}
@@ -548,8 +560,9 @@ func (c *Public) Process(data []byte, e *events.Basic) bool {
 				go func() {
 					if c.cCh != nil {
 						c.cCh <- &e
+					} else {
+						c.StructuredEventChan <- e
 					}
-					c.StructuredEventChan <- e
 				}()
 				return true
 			}
@@ -563,8 +576,9 @@ func (c *Public) Process(data []byte, e *events.Basic) bool {
 				go func() {
 					if c.obCh != nil {
 						c.obCh <- &e
+					} else {
+						c.StructuredEventChan <- e
 					}
-					c.StructuredEventChan <- e
 				}()
 				return true
 			}
